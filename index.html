@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VoxFlow — Text to Speech Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="voxflow.css">
+</head>
+<body>
+<div class="vf-shell">
+
+  <header class="vf-header">
+    <div class="vf-brand">
+      <div class="vf-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M2 12h2"></path><path d="M7 7v10"></path><path d="M12 3v18"></path><path d="M17 7v10"></path><path d="M22 12h-2"></path></svg>
+      </div>
+      <div class="vf-brand-text">
+        <span class="vf-wordmark">VoxFlow</span>
+        <span class="vf-tagline">Text to speech studio</span>
+      </div>
+    </div>
+    <div class="vf-header-actions">
+      <div class="vf-status">
+        <span class="vf-dot" id="statusDot"></span>
+        <span id="statusLabel">Connecting…</span>
+      </div>
+      <button class="vf-btn vf-btn-icon" id="themeBtn" title="Switch theme" aria-label="Switch theme">
+        <svg id="themeIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+      </button>
+      <button class="vf-btn" id="exportBtn" disabled>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>
+        <span>Export</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="vf-main">
+
+    <section class="vf-col">
+      <div class="vf-card">
+        <div class="vf-card-head">
+          <div class="vf-card-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"></path><path d="M9 20h6"></path><path d="M12 4v16"></path></svg>
+            <span>Script</span>
+          </div>
+          <div class="vf-head-actions">
+            <button class="vf-btn vf-btn-sm" id="sampleBtn">Paste sample</button>
+            <button class="vf-btn vf-btn-sm" id="clearBtn">Clear</button>
+          </div>
+        </div>
+        <textarea class="vf-script" id="script" spellcheck="false"
+          placeholder="Type or paste your script here. VoxFlow will narrate it in the voice you select."></textarea>
+        <div class="vf-script-foot">
+          <div class="vf-script-stats">
+            <span id="wordsLabel">0 words</span>
+            <span class="vf-sep"></span>
+            <span id="durationLabel">~0:00</span>
+          </div>
+          <div class="vf-count-wrap">
+            <div class="vf-meter"><div class="vf-meter-fill" id="meterFill" style="width:0%"></div></div>
+            <span class="vf-count" id="countLabel">0 / 5,000 characters</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="vf-generate-row">
+        <button class="vf-generate" id="generateBtn">
+          <span id="generateIcon">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M5 3l14 9-14 9V3z"></path></svg>
+          </span>
+          <span id="generateLabel">Generate Full Audio</span>
+        </button>
+        <div class="vf-narrated">
+          <span>Narrated by</span>
+          <span class="vf-narrated-chip">
+            <span class="vf-avatar vf-avatar-sm" id="activeAvatar">S</span>
+            <strong id="activeName">Sarah</strong>
+          </span>
+          <span id="activeMeta">in English (US) · 1.00x</span>
+        </div>
+      </div>
+
+      <div class="vf-render" id="render" hidden>
+        <button class="vf-render-play" id="renderPlay" aria-label="Play or pause">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"></path></svg>
+        </button>
+        <div class="vf-render-body">
+          <div class="vf-render-line">
+            <span class="vf-render-title" id="renderTitle">Full render</span>
+            <span class="vf-render-meta" id="renderMeta">0:00 · MP3</span>
+          </div>
+          <div class="vf-wave" id="wave"></div>
+        </div>
+        <button class="vf-btn vf-btn-sm" id="downloadBtn">Download</button>
+      </div>
+    </section>
+
+    <section class="vf-col">
+      <div class="vf-card">
+        <div class="vf-lib-head">
+          <div class="vf-lib-title">
+            <span>Voice library</span>
+            <span class="vf-lib-count" id="voiceCount">Loading…</span>
+          </div>
+          <div class="vf-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink-faint)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.2-3.2"></path></svg>
+            <input id="search" placeholder="Search voices, accents, styles">
+          </div>
+          <div class="vf-field">
+            <span class="vf-field-label">Language</span>
+            <button class="vf-lang-btn" id="langBtn" aria-expanded="false" aria-haspopup="listbox">
+              <span class="vf-lang-btn-left">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.9" style="flex:none"><circle cx="12" cy="12" r="9.5"></circle><path d="M2.5 12h19"></path><path d="M12 2.5a15 15 0 0 1 0 19a15 15 0 0 1 0-19z"></path></svg>
+                <span id="langLabel">All languages</span>
+              </span>
+              <span class="vf-lang-btn-right">
+                <span class="vf-lang-n" id="langCount"></span>
+                <svg class="vf-caret" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+              </span>
+            </button>
+            <div class="vf-lang-pop" id="langPop" role="listbox" hidden></div>
+          </div>
+          <div class="vf-filters" id="filters"></div>
+        </div>
+        <div class="vf-voices" id="voices"></div>
+      </div>
+
+      <div class="vf-settings">
+        <div class="vf-settings-head">
+          <span>Voice settings</span>
+          <button class="vf-btn vf-btn-sm" id="resetBtn">Reset</button>
+        </div>
+        <div class="vf-slider">
+          <div class="vf-slider-head">
+            <span>Speed</span>
+            <span class="vf-slider-val" id="speedLabel">1.00x</span>
+          </div>
+          <input type="range" id="speed" min="0.5" max="2" step="0.05" value="1">
+          <div class="vf-scale"><span>0.5x</span><span>1.0x</span><span>2.0x</span></div>
+        </div>
+        <div class="vf-slider">
+          <div class="vf-slider-head">
+            <span>Pitch</span>
+            <span class="vf-slider-val" id="pitchLabel">0 st</span>
+          </div>
+          <input type="range" id="pitch" min="-12" max="12" step="1" value="0">
+          <div class="vf-scale"><span>-12</span><span>0</span><span>+12</span></div>
+          <span class="vf-hint">Applied during playback — Kokoro renders at its natural pitch.</span>
+        </div>
+        <div class="vf-toggle-row">
+          <div class="vf-toggle-text">
+            <span>Stream long scripts</span>
+            <span class="vf-hint">Playback starts before the whole script is rendered</span>
+          </div>
+          <button class="vf-switch" id="streamToggle" role="switch" aria-checked="true">
+            <span class="vf-knob"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="vf-toast" id="toast" role="status" aria-live="polite"></div>
+<audio id="player" hidden></audio>
+<audio id="preview" hidden></audio>
+
+<script src="voxflow-api.js"></script>
+<script src="voxflow-app.js"></script>
+</body>
+</html>
